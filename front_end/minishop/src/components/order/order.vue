@@ -26,11 +26,11 @@
           <div class="clearfix"></div>
           <div class="optArea">
             <p v-text="order.ordertime"></p>
-            <span class="badge">去评价</span>
-            <span class="badge">查看物流</span>
-            <span class="badge">确认收货</span>
-            <span class="badge">退货</span>
-            <span class="badge">去付款</span>
+            <span class="badge" v-show="order.status<=6">去评价</span>
+            <span class="badge" v-show="order.status<=7">查看物流</span>
+            <span class="badge" v-show="order.status<=5">确认收货</span>
+            <span class="badge" v-show="order.status<=5">退货</span>
+            <span class="badge" v-show="order.status<=1">去付款</span>
           </div>
         </div>
       </div>

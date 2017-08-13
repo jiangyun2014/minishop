@@ -5,7 +5,7 @@
     </header>
     <div id="optionbar">
       <div id="checkBtn" class="checkbox barcon">
-        <label><input @click="toggleCheck()" type="checkbox" value="" v-model="selectAllCarts">全选</label>
+        <label><input @change="toggleCheck()" type="checkbox" v-model="selectAllCarts">全选</label>
       </div>
       <div id="countBtn" class="barcon" @click="doCount()">结算</div>
       <div id="totalPriceTip" class="barcon">合计：<span id="totalPriceText" v-text="'￥'+pageTotalPrice"></span></div>
@@ -44,6 +44,18 @@ export default {
       selectAllCarts: false,
       selectCarts: [],
       cartList: []
+    }
+  },
+  watch: {
+    selectCarts: {
+      handler(){
+        if(this.selectCarts.length==this.cartList.length){
+          this.selectAllCarts = true;
+        }else{
+          this.selectAllCarts = false;
+        }
+      },
+      deep: true
     }
   },
   computed: {
@@ -107,13 +119,12 @@ export default {
       });
     },
     toggleCheck(){
-      var cbs = $('.chkItem');
-      for(var i=0; i<cbs.length; i++){
-        if(this.selectAllCarts){alert('ADD:before==='+$(cbs[i]).attr('checked'))
-          $(cbs[i]).attr({'checked':'checked'});alert('ADD:after==='+$(cbs[i]).attr('checked'))
-        }else{alert('Remove:before==='+$(cbs[i]).attr('checked'))
-          $(cbs[i]).removeAttr('checked');alert('Remove:after==='+$(cbs[i]).attr('checked'))
-        }
+      var ctx = this;
+      this.selectCarts = [];
+      if(this.selectAllCarts==true){
+        this.cartList.forEach(function(value,index){
+          ctx.selectCarts.push(value);
+        });
       }
     }
   },

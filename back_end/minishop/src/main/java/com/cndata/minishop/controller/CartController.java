@@ -38,23 +38,25 @@ public class CartController {
 	public Map<String,Object> add(HttpServletRequest req, @RequestBody Cart cart){
 		Map<String,Object> result = new HashMap<String,Object>();
 		
-		CartExample example = new CartExample();
-		CartExample.Criteria criteria = example.createCriteria();
-		criteria.andGoodsidEqualTo(cart.getGoodsid());
-		List<Cart> cartList = cartService.getByList(example);
-		if(cartList!=null && cartList.size()>0){//若购物车中已有该商品，则数量加1
-			cart = cartList.get(0);
-			cart.setQuantity(cart.getQuantity()+1);
-			cartService.update(cart);
-		}else{
-			Goods goods = goodsService.getById(cart.getGoodsid());
-			cart.setPrice(goods.getPrice());
-			cart.setQuantity(1);
-			String token = req.getHeader("Authorization");
-			if(null!=token && !"".equals(token)){
-				Cache cache = CacheManager.getCacheInfo(token);
-				if(null!=cache){
-					Users user = (Users) cache.getValue();
+		String token = req.getHeader("Authorization");
+		if(null!=token && !"".equals(token)){
+			Cache cache = CacheManager.getCacheInfo(token);
+			if(null!=cache){
+				Users user = (Users) cache.getValue();
+				
+				CartExample example = new CartExample();
+				CartExample.Criteria criteria = example.createCriteria();
+				criteria.andGoodsidEqualTo(cart.getGoodsid());
+				criteria.andUseridEqualTo(user.getId());
+				List<Cart> cartList = cartService.getByList(example);
+				if(cartList!=null && cartList.size()>0){//若购物车中已有该商品，则数量加1
+					cart = cartList.get(0);
+					cart.setQuantity(cart.getQuantity()+1);
+					cartService.update(cart);
+				}else{
+					Goods goods = goodsService.getById(cart.getGoodsid());
+					cart.setPrice(goods.getPrice());
+					cart.setQuantity(1);
 					cart.setUserid(user.getId());
 					cartService.add(cart);
 				}
